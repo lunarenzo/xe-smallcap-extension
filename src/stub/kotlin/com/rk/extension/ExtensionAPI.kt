@@ -3,7 +3,13 @@ package com.rk.extension
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
-import com.rk.extension.api.ExtensionContext
+
+class ExtensionContext {
+    fun logInfo(message: String) {}
+    fun logDebug(message: String) {}
+    fun logWarn(message: String) {}
+    fun logError(message: String) {}
+}
 
 abstract class ExtensionAPI(val context: ExtensionContext) : Application.ActivityLifecycleCallbacks {
     abstract fun onLoad()

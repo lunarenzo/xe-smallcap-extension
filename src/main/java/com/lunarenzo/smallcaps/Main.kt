@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 import com.rk.commands.CommandProvider
 import com.rk.commands.ToolbarConfiguration
 import com.rk.extension.ExtensionAPI
-import com.rk.extension.api.ExtensionContext
+import com.rk.extension.ExtensionContext
 
 /**
  * Main entry point for the Small Caps Text Converter Xed-Editor Extension.
