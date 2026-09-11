@@ -28,6 +28,15 @@ object SmallCapsInputManager {
         @Volatile
         private var isModifying = false
 
+        override fun beforeReplace(
+            content: Content,
+            startLine: Int,
+            startColumn: Int,
+            endLine: Int,
+            endColumn: Int,
+            replacement: CharSequence
+        ) {}
+
         override fun afterInsert(
             content: Content,
             startLine: Int,
@@ -51,6 +60,15 @@ object SmallCapsInputManager {
                 }
             }
         }
+
+        override fun afterDelete(
+            content: Content,
+            startLine: Int,
+            startColumn: Int,
+            endLine: Int,
+            endColumn: Int,
+            deletedText: CharSequence
+        ) {}
     }
 
     private val contentListener = SmallCapsContentListener()
@@ -66,7 +84,7 @@ object SmallCapsInputManager {
     }
 
     /**
-     * Attach real-time input conversion listener to a [CodeEditor] instance.
+     * Attach real-time input conversion listener to an [Editor] instance.
      */
     fun attachToEditor(editor: Editor?) {
         if (editor == null) return
