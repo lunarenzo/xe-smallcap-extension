@@ -11,21 +11,27 @@ version = "1.0.0"
 repositories {
     mavenCentral()
     google()
-    maven("https://jitpack.io")
+}
+
+sourceSets {
+    main {
+        kotlin.srcDir("src/stub/kotlin")
+    }
 }
 
 dependencies {
-    // Standard Kotlin JDK library
     implementation(kotlin("stdlib"))
-
-    // Android/Xed Editor SDK compile-only dependencies if available
-    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveFileName.set("SmallCapsExtension.zip")
     isZip64 = true
     destinationDirectory.set(file("./output"))
+
+    // Exclude host SDK stubs from the compiled extension output package
+    exclude("com/rk/**")
+    exclude("androidx/**")
+    exclude("android/**")
 }
 
 tasks.register<Zip>("buildExtensionPackage") {
