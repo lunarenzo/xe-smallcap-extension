@@ -23,6 +23,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;34.0.0 platforms;android-34'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -30,8 +32,28 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x gradlew
 
-      - name: Build Extension Package with Android DEX Bytecode
-        run: ./gradlew buildExtensionApk --no-daemon
+      - name: Compile Kotlin Sources
+        run: ./gradlew compileKotlin --no-daemon
+
+      - name: Convert Classes to Android DEX Bytecode
+        run: |
+          mkdir -p build/dex
+          D8_TOOL="$ANDROID_HOME/build-tools/34.0.0/d8"
+          ANDROID_JAR="$ANDROID_HOME/platforms/android-34/android.jar"
+          
+          CLASS_FILES=$(find build/classes/kotlin/main/com/lunarenzo/smallcaps -name "*.class")
+          echo "Compiling class files to DEX:"
+          echo "$CLASS_FILES"
+          
+          "$D8_TOOL" --lib "$ANDROID_JAR" --output build/dex $CLASS_FILES
+
+      - name: Package extension.apk and Output Zip
+        run: |
+          cd build/dex
+          zip -r ../extension.apk classes.dex
+          cd ../..
+          mkdir -p output
+          zip -j output/com.lunarenzo.smallcaps.zip manifest.json build/extension.apk
 
       - name: Upload Extension Artifact
         uses: actions/upload-artifact@v4
