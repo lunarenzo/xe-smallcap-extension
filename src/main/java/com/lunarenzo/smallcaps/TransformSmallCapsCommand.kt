@@ -1,5 +1,6 @@
 package com.lunarenzo.smallcaps
 
+import com.rk.commands.ActionContext
 import com.rk.commands.EditorActionContext
 import com.rk.commands.EditorCommand
 import com.rk.commands.EditorNonActionContext
@@ -13,17 +14,31 @@ class TransformSmallCapsCommand : EditorCommand() {
 
     override val id: String = "com.lunarenzo.smallcaps.transform"
 
-    // Prefer label text representation when rendered on action toolbars
     override val preferText: Boolean = true
 
-    override fun getLabel(): String = "ѕᴡᴏʀᴅ (Small Caps)"
+    override fun getLabel(): String = "Convert to Small Caps"
 
     override fun getIcon(): Icon = Icon.TextIcon("ѕᴡ")
 
     /**
-     * Replaces the currently active selection range with converted Small Caps text.
+     * Compatibility entry point for host app calling execute(context).
      */
     override fun execute(context: EditorActionContext) {
+        action(context)
+    }
+
+    /**
+     * Compatibility entry point for host app calling execute(context).
+     */
+    override fun execute(context: ActionContext) {
+        action(context)
+    }
+
+    /**
+     * Primary action handler called by Xed-Editor runtime.
+     * Replaces the currently active selection range with converted Small Caps text.
+     */
+    override fun action(context: EditorActionContext) {
         val editor = context.editor
         if (editor.isTextSelected) {
             val selectionStart = editor.cursorRange.startIndex
@@ -37,9 +52,6 @@ class TransformSmallCapsCommand : EditorCommand() {
         }
     }
 
-    /**
-     * Enabled only when the active editor is editable and has a non-empty text selection.
-     */
     override fun isEnabled(context: EditorNonActionContext): Boolean {
         val editorTab = context.editorTab
         val isEditable = editorTab.editorState.editable
@@ -47,9 +59,6 @@ class TransformSmallCapsCommand : EditorCommand() {
         return isEditable && (editor?.isTextSelected == true)
     }
 
-    /**
-     * Supported whenever the active editor tab is in editable state.
-     */
     override fun isSupported(context: EditorNonActionContext): Boolean {
         return context.editorTab.editorState.editable
     }

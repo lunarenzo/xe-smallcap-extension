@@ -1,5 +1,6 @@
 package com.lunarenzo.smallcaps
 
+import com.rk.commands.ActionContext
 import com.rk.commands.EditorActionContext
 import com.rk.commands.EditorCommand
 import com.rk.commands.EditorNonActionContext
@@ -28,10 +29,18 @@ class ToggleSmallCapsModeCommand(
      */
     override fun isOn(): Boolean = isEnabledMode
 
+    override fun execute(context: EditorActionContext) {
+        action(context)
+    }
+
+    override fun execute(context: ActionContext) {
+        action(context)
+    }
+
     /**
      * Toggles the active state and notifies listener callback.
      */
-    override fun execute(context: EditorActionContext) {
+    override fun action(context: EditorActionContext) {
         isEnabledMode = !isEnabledMode
         onToggleChanged(isEnabledMode)
     }

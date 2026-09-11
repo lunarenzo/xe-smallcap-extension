@@ -20,7 +20,10 @@ abstract class Command {
     open val prefix: String? = null
     abstract fun getLabel(): String
     abstract fun getIcon(): Icon
-    abstract fun execute(context: ActionContext)
+    open fun execute(context: ActionContext) {
+        action(context)
+    }
+    open fun action(context: ActionContext) {}
     open fun isEnabled(): Boolean = true
     open fun isSupported(): Boolean = true
     open val preferText: Boolean = false
@@ -31,8 +34,14 @@ interface ToggleableCommand {
 }
 
 abstract class EditorCommand : Command() {
-    final override fun execute(context: ActionContext) {}
-    abstract fun execute(context: EditorActionContext)
+    override fun execute(context: ActionContext) {
+        action(context)
+    }
+    override fun action(context: ActionContext) {}
+    open fun execute(context: EditorActionContext) {
+        action(context)
+    }
+    open fun action(context: EditorActionContext) {}
     open fun isSupported(context: EditorNonActionContext): Boolean = true
     open fun isEnabled(context: EditorNonActionContext): Boolean = true
 }
