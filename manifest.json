@@ -1,0 +1,15 @@
+{
+  "id": "com.lunarenzo.smallcaps",
+  "name": "Small Caps Text Converter",
+  "mainClass": "com.lunarenzo.smallcaps.Main",
+  "version": "1.0.0",
+  "description": "Convert selected text or real-time typing to Unicode Small Caps font (ѕᴡᴏʀᴅ).",
+  "author": {
+    "displayName": "Lunar Enzo",
+    "github": "lunarenzo"
+  },
+  "minAppVersion": 1,
+  "repository": "https://github.com/lunarenzo/xe-smallcap-extension",
+  "license": "MIT",
+  "tags": ["smallcaps", "editor", "formatting", "font", "unicode"]
+}
