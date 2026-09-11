@@ -27,6 +27,9 @@ class Main(context: ExtensionContext) : ExtensionAPI(context) {
     override fun onLoad() {
         context.logInfo("Initializing Small Caps Extension v1.0.0...")
 
+        // Initialize real-time input manager and event subscriptions
+        SmallCapsInputManager.initialize()
+
         // Register commands into global CommandProvider
         CommandProvider.registerCommand(transformCommand)
         CommandProvider.registerCommand(toggleCommand)
@@ -44,6 +47,9 @@ class Main(context: ExtensionContext) : ExtensionAPI(context) {
      */
     override fun onDispose() {
         context.logInfo("Disposing Small Caps Extension...")
+
+        // Dispose real-time input manager
+        SmallCapsInputManager.dispose()
 
         // Remove commands from toolbar
         ToolbarConfiguration.removeEditorToolbarCommand(transformCommand)

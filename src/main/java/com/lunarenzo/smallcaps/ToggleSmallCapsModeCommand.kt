@@ -17,17 +17,14 @@ class ToggleSmallCapsModeCommand(
 
     override val id: String = "com.lunarenzo.smallcaps.toggle_mode"
 
-    @Volatile
-    private var isEnabledMode: Boolean = false
-
     override fun getLabel(): String = "Small Caps Input Mode"
 
-    override fun getIcon(): Icon = Icon.TextIcon("ᴀʙ")
+    override fun getIcon(): Icon = Icon.TextIcon("ᴀᵃ")
 
     /**
      * Returns true if Small Caps Input Mode is currently toggled on.
      */
-    override fun isOn(): Boolean = isEnabledMode
+    override fun isOn(): Boolean = SmallCapsInputManager.isModeEnabled
 
     override fun execute(context: EditorActionContext) {
         action(context)
@@ -38,11 +35,17 @@ class ToggleSmallCapsModeCommand(
     }
 
     /**
-     * Toggles the active state and notifies listener callback.
+     * Toggles the active state, attaches input listener to current active editor if needed,
+     * and notifies listener callback.
      */
     override fun action(context: EditorActionContext) {
-        isEnabledMode = !isEnabledMode
-        onToggleChanged(isEnabledMode)
+        val newState = !SmallCapsInputManager.isModeEnabled
+        SmallCapsInputManager.isModeEnabled = newState
+
+        // Ensure input listener is attached to current active editor instance
+        SmallCapsInputManager.attachToEditor(context.editor)
+
+        onToggleChanged(newState)
     }
 
     override fun isSupported(context: EditorNonActionContext): Boolean = true

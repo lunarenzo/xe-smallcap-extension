@@ -8,7 +8,7 @@ import com.rk.icons.Icon
 
 /**
  * An [EditorCommand] that converts highlighted selected text inside the active text editor
- * into Unicode Small Caps characters (e.g. "Sword" / "sword" -> "ѕᴡᴏʀᴅ").
+ * into Unicode Small Caps characters.
  */
 class TransformSmallCapsCommand : EditorCommand() {
 
@@ -18,7 +18,7 @@ class TransformSmallCapsCommand : EditorCommand() {
 
     override fun getLabel(): String = "Convert to Small Caps"
 
-    override fun getIcon(): Icon = Icon.TextIcon("ѕᴡ")
+    override fun getIcon(): Icon = Icon.TextIcon("ѕᴄ")
 
     /**
      * Compatibility entry point for host app calling execute(context).
