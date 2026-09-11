@@ -12,6 +12,7 @@ repositories {
 
 sourceSets {
     main {
+        java.srcDir("src/stub/java")
         kotlin.srcDir("src/stub/kotlin")
     }
 }
