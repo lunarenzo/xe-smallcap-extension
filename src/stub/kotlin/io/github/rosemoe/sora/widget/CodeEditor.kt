@@ -7,4 +7,5 @@ open class CodeEditor {
     val isTextSelected: Boolean = false
     val cursorRange: TextRange = TextRange()
     val text: Content = Content()
+    fun post(action: Runnable): Boolean = false
 }

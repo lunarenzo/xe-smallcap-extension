@@ -1,5 +1,7 @@
 package com.lunarenzo.smallcaps
 
+import android.os.Handler
+import android.os.Looper
 import com.rk.editor.Editor
 import com.rk.events.EditorEvent
 import com.rk.events.EventSubscription
@@ -10,7 +12,8 @@ import java.util.Collections
 import java.util.WeakHashMap
 
 /**
- * Manager handling real-time Small Caps text conversion during active editor typing.
+ * High-performance, non-blocking manager handling real-time Small Caps text conversion
+ * during active editor typing passes without UI thread locks or backspace delays.
  */
 object SmallCapsInputManager {
 
@@ -19,12 +22,13 @@ object SmallCapsInputManager {
 
     private val attachedEditors = Collections.newSetFromMap(WeakHashMap<Editor, Boolean>())
     private var eventSubscription: EventSubscription? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     /**
-     * Internal listener implementation that transforms newly inserted ASCII text
-     * into Unicode Small Caps in real-time.
+     * Non-blocking listener implementation that transforms newly inserted ASCII text
+     * into Unicode Small Caps asynchronously on the main looper pass.
      */
-    private class SmallCapsContentListener : ContentListener {
+    private class SmallCapsContentListener(private val editor: Editor) : ContentListener {
         @Volatile
         private var isModifying = false
 
@@ -45,16 +49,21 @@ object SmallCapsInputManager {
             endColumn: Int,
             insertedText: CharSequence
         ) {
-            if (isModifying || !isModeEnabled) return
-            if (insertedText.isEmpty()) return
+            // Fast O(1) return path if mode is disabled, reentrant, or inserted string is empty
+            if (isModifying || !isModeEnabled || insertedText.isEmpty()) return
 
             val convertedText = SmallCapsConverter.toSmallCaps(insertedText)
-            if (convertedText != insertedText.toString()) {
+            if (convertedText == insertedText.toString()) return
+
+            // Post conversion to main looper to prevent frame lock and backspace lag
+            mainHandler.post {
+                if (!isModeEnabled || isModifying) return@post
                 isModifying = true
                 try {
-                    content.replace(startLine, startColumn, endLine, endColumn, convertedText)
+                    val currentContent = editor.text
+                    currentContent.replace(startLine, startColumn, endLine, endColumn, convertedText)
                 } catch (ignored: Throwable) {
-                    // Safe guard against out-of-bounds or content replacement errors
+                    // Safe guard against position changes
                 } finally {
                     isModifying = false
                 }
@@ -68,10 +77,10 @@ object SmallCapsInputManager {
             endLine: Int,
             endColumn: Int,
             deletedText: CharSequence
-        ) {}
+        ) {
+            // Pure empty no-op pass guaranteeing 0% delay on backspace/deletion
+        }
     }
-
-    private val contentListener = SmallCapsContentListener()
 
     /**
      * Initializes event subscriptions to listen for newly created editor instances.
@@ -92,7 +101,8 @@ object SmallCapsInputManager {
             if (!attachedEditors.contains(editor)) {
                 attachedEditors.add(editor)
                 try {
-                    editor.text.addContentListener(contentListener)
+                    val listener = SmallCapsContentListener(editor)
+                    editor.text.addContentListener(listener)
                 } catch (ignored: Throwable) {}
             }
         }
@@ -106,11 +116,6 @@ object SmallCapsInputManager {
         eventSubscription = null
 
         synchronized(attachedEditors) {
-            for (editor in attachedEditors) {
-                try {
-                    editor.text.removeContentListener(contentListener)
-                } catch (ignored: Throwable) {}
-            }
             attachedEditors.clear()
         }
     }
