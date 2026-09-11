@@ -1,7 +1,9 @@
 package com.rk.commands
 
 import android.app.Activity
+import com.rk.editor.Editor
 import com.rk.icons.Icon
+import com.rk.tabs.editor.EditorTab
 
 open class ActionContext(open val currentActivity: Activity? = null)
 
@@ -12,36 +14,6 @@ open class EditorActionContext(
 ) : ActionContext(currentActivity)
 
 open class EditorNonActionContext(open val editorTab: EditorTab)
-
-interface CursorRange {
-    val startIndex: Int
-    val endIndex: Int
-}
-
-interface EditableText {
-    fun substring(start: Int, end: Int): String
-    fun replace(start: Int, end: Int, replacement: String)
-}
-
-interface Editor {
-    val isTextSelected: Boolean
-    val cursorRange: CursorRange
-    val text: EditableText
-}
-
-interface EditorState {
-    val editable: Boolean
-    val editor: WeakRefEditor
-}
-
-interface WeakRefEditor {
-    fun get(): Editor?
-}
-
-interface EditorTab {
-    val isEditable: Boolean
-    val editorState: EditorState
-}
 
 abstract class Command {
     abstract val id: String
